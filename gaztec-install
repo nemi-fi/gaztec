@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+install_aztec() {
+  local version=$1
+
+  local aztec_path="$HOME/.aztec/v$version/bin"
+
+  if [[ ! -f "$aztec_path/aztec" ]]; then
+    echo "Installing aztec $version in $aztec_path"
+    VERSION=$version BIN_PATH=$aztec_path NON_INTERACTIVE=1 bash -i <(curl -s https://install.aztec.network)
+  fi
+}
+
+AZTEC_VERSION=""
+# go from the current dir to the root of the filesystem and find the first .gaztecrc file
+dir=$(pwd)
+while [[ $dir != "/" ]]; do
+  if [[ -f "$dir/.gaztecrc" ]]; then
+    AZTEC_VERSION=$(cat $dir/.gaztecrc | tr -d '\n')
+    break
+  fi
+  dir=$(dirname $dir)
+done
+# if AZTEC_VERSION is still empty, exit
+if [[ -z "$AZTEC_VERSION" ]]; then
+  echo "No .gaztecrc file found in the current or parent directories starting from $(pwd)"
+  exit 1
+fi
+
+
+install_aztec $AZTEC_VERSION
+
+AZTEC="$HOME/.aztec/v$AZTEC_VERSION/bin/aztec"
+AZTEC_NARGO="$HOME/.aztec/v$AZTEC_VERSION/bin/aztec-nargo"
+AZTEC_POSTPROCESS_CONTRACT="$HOME/.aztec/v$AZTEC_VERSION/bin/aztec-postprocess-contract"
