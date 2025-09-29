@@ -18,6 +18,7 @@ dir=$(pwd)
 while [[ $dir != "/" ]]; do
   if [[ -f "$dir/.gaztecrc" ]]; then
     AZTEC_VERSION=$(cat $dir/.gaztecrc | tr -d '\n')
+    echo "Using aztec version $AZTEC_VERSION from $dir/.gaztecrc"
     break
   fi
   dir=$(dirname $dir)
