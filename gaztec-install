@@ -8,7 +8,7 @@ install_aztec() {
 
   if [[ ! -f "$aztec_path/aztec" ]]; then
     echo "Installing aztec $version in $aztec_path"
-    VERSION=$version BIN_PATH=$aztec_path NON_INTERACTIVE=1 bash -i <(curl -s https://install.aztec.network)
+    VERSION=$version BIN_PATH=$aztec_path NON_INTERACTIVE=1 bash -i <(curl -s https://raw.githubusercontent.com/AztecProtocol/aztec-packages/refs/tags/v$version/aztec-up/bin/aztec-install)
   fi
 }
 
@@ -29,6 +29,7 @@ if [[ -z "$AZTEC_VERSION" ]]; then
   exit 1
 fi
 
+export VERSION=$AZTEC_VERSION
 
 install_aztec $AZTEC_VERSION
 
