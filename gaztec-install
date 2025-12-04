@@ -32,4 +32,6 @@ fi
 
 install_aztec $AZTEC_VERSION
 
+export VERSION=$AZTEC_VERSION
+
 AZTEC="$HOME/.aztec/v$AZTEC_VERSION/bin/aztec"
