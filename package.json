@@ -1,6 +1,6 @@
 {
   "name": "gaztec",
-  "version": "0.1.0-nightly.20251128-3",
+  "version": "0.1.1-nightly.20251128-3",
   "type": "module",
   "description": "Aztec version manager",
   "packageManager": "pnpm@10.12.3",

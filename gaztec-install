@@ -29,6 +29,7 @@ if [[ -z "$AZTEC_VERSION" ]]; then
   exit 1
 fi
 
+export VERSION=$AZTEC_VERSION
 
 install_aztec $AZTEC_VERSION
 
