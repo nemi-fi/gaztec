@@ -1,5 +1,7 @@
 # Aztec version manager
 
+Manage your `aztec` versions without hussle. Automatically switch between versions in projects by creating a `.gaztecrc` file.
+
 ## Installation
 
 ```sh
