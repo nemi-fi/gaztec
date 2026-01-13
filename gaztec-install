@@ -23,10 +23,11 @@ while [[ $dir != "/" ]]; do
   fi
   dir=$(dirname $dir)
 done
-# if AZTEC_VERSION is still empty, exit
+
+# fallback
 if [[ -z "$AZTEC_VERSION" ]]; then
-  echo "No .gaztecrc file found in the current or parent directories starting from $(pwd)"
-  exit 1
+  echo "No .gaztecrc file found in the current or parent directories starting from $(pwd). Falling back to latest version."
+  AZTEC_VERSION="latest"
 fi
 
 export VERSION=$AZTEC_VERSION
