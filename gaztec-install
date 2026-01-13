@@ -26,8 +26,10 @@ done
 
 # fallback
 if [[ -z "$AZTEC_VERSION" ]]; then
-  echo "No .gaztecrc file found in the current or parent directories starting from $(pwd). Falling back to latest version."
-  AZTEC_VERSION="latest"
+  echo "No .gaztecrc file found in the current or parent directories starting from $(pwd). Falling back to the latest version."
+  # fetch the latest version from github releases, remove the v prefix
+  AZTEC_VERSION=$(curl -s https://api.github.com/repos/AztecProtocol/aztec-packages/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+  echo "Latest version is $AZTEC_VERSION"
 fi
 
 export VERSION=$AZTEC_VERSION
