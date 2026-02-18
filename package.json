@@ -10,8 +10,6 @@
   },
   "bin": {
     "gaztec-install": "./gaztec-install",
-    "gaztec": "./gaztec",
-    "gaztec-nargo": "./gaztec-nargo",
-    "gaztec-postprocess-contract": "./gaztec-postprocess-contract"
+    "gaztec": "./gaztec"
   }
 }

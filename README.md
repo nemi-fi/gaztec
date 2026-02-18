@@ -25,10 +25,4 @@ echo "2.0.3" > .gaztecrc
 # use `gaztec` where you would use `aztec`
 gaztec --version
 #> 2.0.3
-
-# replacement for `aztec-nargo`
-gaztec-nargo
-
-# replacement for `aztec-postprocess-contract`
-gaztec-postprocess-contract
 ```
