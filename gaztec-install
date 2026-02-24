@@ -6,7 +6,8 @@ install_aztec() {
 
   if ! command -v aztec-up &> /dev/null; then
     echo "aztec-up could not be found. Installing it..."
-    VERSION=$version NON_INTERACTIVE=1 bash -i <(curl -sL https://install.aztec.network/$version)
+    # FOUNDRY_DIR is needed due to a bug in aztec-up
+    FOUNDRY_DIR="$HOME/.foundry" VERSION=$version NON_INTERACTIVE=1 bash -i <(curl -sL https://install.aztec.network/$version)
   fi
 
   if ! aztec-up list | grep $version; then
