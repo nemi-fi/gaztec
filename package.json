@@ -13,6 +13,6 @@
     "gaztec": "./gaztec"
   },
   "scripts": {
-    "test": "cd test && ../gaztec --version"
+    "test": "cd test && [ \"$(../gaztec --version)\" = \"$(cat .aztecrc)\" ] && echo 'Test passed'"
   }
 }
