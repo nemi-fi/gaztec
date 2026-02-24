@@ -11,5 +11,8 @@
   "bin": {
     "gaztec-install": "./gaztec-install",
     "gaztec": "./gaztec"
+  },
+  "scripts": {
+    "test": "cd test && [ $(../gaztec --version) -eq $(cat .aztecrc) ] && echo 'Test passed'"
   }
 }
