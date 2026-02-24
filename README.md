@@ -20,9 +20,9 @@ npm i gaztec -D
 
 ```sh
 # create a file that defines the version of Aztec for your project
-echo "2.0.3" > .gaztecrc
+echo "4.0.0-nightly.20260218" > .gaztecrc
 
 # use `gaztec` where you would use `aztec`
 gaztec --version
-#> 2.0.3
+#> 4.0.0-nightly.20260218
 ```
