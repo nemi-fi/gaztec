@@ -11,7 +11,7 @@ install_aztec() {
   fi
 
   # handle github CI
-  if [[ -n "$GITHUB_PATH" ]]; then
+  if [[ -n "${GITHUB_PATH-}" ]]; then
     echo "$HOME/.aztec/current/bin" >> $GITHUB_PATH
     echo "$HOME/.aztec/current/node_modules/.bin" >> $GITHUB_PATH
     echo "$HOME/.aztec/bin" >> $GITHUB_PATH
