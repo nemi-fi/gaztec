@@ -10,6 +10,13 @@ install_aztec() {
     FOUNDRY_DIR="$HOME/.foundry" VERSION=$version NON_INTERACTIVE=1 bash -i <(curl -sL https://install.aztec.network/$version)
   fi
 
+  # handle github CI
+  if [[ -n "$GITHUB_PATH" ]]; then
+    echo "$HOME/.aztec/current/bin" >> $GITHUB_PATH
+    echo "$HOME/.aztec/current/node_modules/.bin" >> $GITHUB_PATH
+    echo "$HOME/.aztec/bin" >> $GITHUB_PATH
+  fi
+
   if ! aztec-up list | grep $version; then
     echo "Installing aztec version $version..."
     aztec-up install $version
