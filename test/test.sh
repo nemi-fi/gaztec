@@ -3,7 +3,7 @@ set -euo pipefail
 
 # check if the version of aztec is the same as the version in the .aztecrc file
 
-gaztec_version=$(../gaztec --version)
+gaztec_version=$(source ../gaztec --version)
 file_version=$(cat .aztecrc)
 
 if [[ "$gaztec_version" != "$file_version" ]]; then
