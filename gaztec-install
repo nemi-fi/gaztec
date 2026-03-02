@@ -47,20 +47,11 @@ fi
 
 echo "debug: aztec-up should be installed now"
 
-# handle github CI
-if [[ -n "${GITHUB_PATH-}" ]]; then
-  echo "debug: adding $HOME/.aztec/bin to github path"
-  echo "debug: contents of $HOME/.aztec/bin:"
-  ls -la $HOME/.aztec/bin
+AZTEC_UP="$HOME/.aztec/bin/aztec-up"
 
-  echo "$HOME/.aztec/bin" >> $GITHUB_PATH
-fi
-
-echo "debug: github path should be set now"
-
-if ! aztec-up list | grep $AZTEC_VERSION; then
+if ! $AZTEC_UP list | grep $AZTEC_VERSION; then
   echo "Installing aztec version $AZTEC_VERSION..."
-  aztec-up install $AZTEC_VERSION
+  $AZTEC_UP install $AZTEC_VERSION
 fi
 
 echo "debug: aztec version $AZTEC_VERSION should be installed now"
