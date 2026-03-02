@@ -21,8 +21,6 @@ install_aztec() {
     echo "Installing aztec version $version..."
     aztec-up install $version
   fi
-
-  aztec-up use $version
 }
 
 AZTEC_VERSION=""
@@ -62,4 +60,6 @@ fi
 
 install_aztec $AZTEC_VERSION
 
-AZTEC="aztec"
+AZTEC_UP_PATH=$(dirname $(dirname $(which aztec-up)))
+
+AZTEC="$AZTEC_UP_PATH/versions/$AZTEC_VERSION/node_modules/.bin/aztec"
