@@ -1,33 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-install_aztec() {
-  local version=$1
-
-  echo "debug: checking if aztec-up is installed..."
-
-  if ! command -v aztec-up &> /dev/null; then
-    echo "aztec-up could not be found. Installing it..."
-    # FOUNDRY_DIR is needed due to a bug in aztec-up
-    FOUNDRY_DIR="$HOME/.foundry" VERSION=$version NON_INTERACTIVE=1 bash -i <(curl -sL https://install.aztec.network/$version)
-  fi
-
-  echo "debug: aztec-up should be installed now"
-
-  # handle github CI
-  if [[ -n "${GITHUB_PATH-}" ]]; then
-    echo "$HOME/.aztec/bin" >> $GITHUB_PATH
-  fi
-
-  echo "debug: github path should be set now"
-
-  if ! aztec-up list | grep $version; then
-    echo "Installing aztec version $version..."
-    aztec-up install $version
-  fi
-
-  echo "debug: aztec version $version should be installed now"
-}
 
 AZTEC_VERSION=""
 # go from the current dir to the root of the filesystem and find the first .aztecrc or .gaztecrc file
@@ -64,7 +37,29 @@ if [[ -z "$AZTEC_VERSION" ]]; then
   echo "Latest version is $AZTEC_VERSION"
 fi
 
-install_aztec $AZTEC_VERSION
+echo "debug: checking if aztec-up is installed..."
+
+if ! command -v aztec-up &> /dev/null; then
+  echo "aztec-up could not be found. Installing it..."
+  # FOUNDRY_DIR is needed due to a bug in aztec-up
+  FOUNDRY_DIR="$HOME/.foundry" VERSION=$AZTEC_VERSION NON_INTERACTIVE=1 bash -i <(curl -sL https://install.aztec.network/$AZTEC_VERSION)
+fi
+
+echo "debug: aztec-up should be installed now"
+
+# handle github CI
+if [[ -n "${GITHUB_PATH-}" ]]; then
+  echo "$HOME/.aztec/bin" >> $GITHUB_PATH
+fi
+
+echo "debug: github path should be set now"
+
+if ! aztec-up list | grep $AZTEC_VERSION; then
+  echo "Installing aztec version $AZTEC_VERSION..."
+  aztec-up install $AZTEC_VERSION
+fi
+
+echo "debug: aztec version $AZTEC_VERSION should be installed now"
 
 AZTEC_UP_PATH=$(dirname $(dirname $(which aztec-up)))
 
