@@ -4,21 +4,29 @@ set -euo pipefail
 install_aztec() {
   local version=$1
 
+  echo "debug: checking if aztec-up is installed..."
+
   if ! command -v aztec-up &> /dev/null; then
     echo "aztec-up could not be found. Installing it..."
     # FOUNDRY_DIR is needed due to a bug in aztec-up
     FOUNDRY_DIR="$HOME/.foundry" VERSION=$version NON_INTERACTIVE=1 bash -i <(curl -sL https://install.aztec.network/$version)
   fi
 
+  echo "debug: aztec-up should be installed now"
+
   # handle github CI
   if [[ -n "${GITHUB_PATH-}" ]]; then
     echo "$HOME/.aztec/bin" >> $GITHUB_PATH
   fi
 
+  echo "debug: github path should be set now"
+
   if ! aztec-up list | grep $version; then
     echo "Installing aztec version $version..."
     aztec-up install $version
   fi
+
+  echo "debug: aztec version $version should be installed now"
 }
 
 AZTEC_VERSION=""
