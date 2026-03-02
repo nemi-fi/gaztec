@@ -37,8 +37,6 @@ if [[ -z "$AZTEC_VERSION" ]]; then
   echo "Latest version is $AZTEC_VERSION" >&2
 fi
 
-echo "debug: checking if aztec-up is installed..." >&2
-
 AZTEC_PATH="$HOME/.aztec"
 AZTEC_UP="$AZTEC_PATH/bin/aztec-up"
 
@@ -48,13 +46,9 @@ if [[ ! -f "$AZTEC_UP" ]]; then
   FOUNDRY_DIR="$HOME/.foundry" VERSION=$AZTEC_VERSION NON_INTERACTIVE=1 bash -i <(curl -sL https://install.aztec.network/$AZTEC_VERSION)
 fi
 
-echo "debug: aztec-up should be installed now" >&2
-
 if ! $AZTEC_UP list | grep $AZTEC_VERSION; then
   echo "Installing aztec version $AZTEC_VERSION..." >&2
   $AZTEC_UP install $AZTEC_VERSION
 fi
-
-echo "debug: aztec version $AZTEC_VERSION should be installed now" >&2
 
 AZTEC="$AZTEC_PATH/versions/$AZTEC_VERSION/node_modules/.bin/aztec"
