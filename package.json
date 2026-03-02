@@ -13,6 +13,6 @@
     "gaztec": "./gaztec"
   },
   "scripts": {
-    "test": "cd test && ./test.sh"
+    "test": "cd test && ../gaztec --version"
   }
 }
