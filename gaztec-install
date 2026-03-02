@@ -56,6 +56,6 @@ fi
 
 echo "debug: aztec version $AZTEC_VERSION should be installed now"
 
-AZTEC_UP_PATH=$(dirname $(dirname $(which aztec-up)))
+AZTEC_PATH=$(dirname $(dirname $(which aztec-up)))
 
-AZTEC="$AZTEC_UP_PATH/versions/$AZTEC_VERSION/node_modules/.bin/aztec"
+AZTEC="$AZTEC_PATH/versions/$AZTEC_VERSION/node_modules/.bin/aztec"
