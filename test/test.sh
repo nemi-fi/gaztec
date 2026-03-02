@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source ../gaztec --version
+source $(dirname -- "${BASH_SOURCE[0]}")/../gaztec --version
 
 echo "Test passed"
