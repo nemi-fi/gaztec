@@ -47,7 +47,8 @@ fi
 
 echo "debug: aztec-up should be installed now"
 
-AZTEC_UP="$HOME/.aztec/bin/aztec-up"
+AZTEC_PATH="$HOME/.aztec"
+AZTEC_UP="$AZTEC_PATH/bin/aztec-up"
 
 if ! $AZTEC_UP list | grep $AZTEC_VERSION; then
   echo "Installing aztec version $AZTEC_VERSION..."
@@ -55,7 +56,5 @@ if ! $AZTEC_UP list | grep $AZTEC_VERSION; then
 fi
 
 echo "debug: aztec version $AZTEC_VERSION should be installed now"
-
-AZTEC_PATH=$(dirname $(dirname $(which aztec-up)))
 
 AZTEC="$AZTEC_PATH/versions/$AZTEC_VERSION/node_modules/.bin/aztec"
