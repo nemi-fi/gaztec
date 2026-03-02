@@ -8,21 +8,21 @@ dir=$(pwd)
 while [[ $dir != "/" ]]; do
   # fail if both .aztecrc and .gaztecrc files are found
   if [[ -f "$dir/.aztecrc" && -f "$dir/.gaztecrc" ]]; then
-    echo "Found both .aztecrc and .gaztecrc files in $dir. Please only use one of them."
+    echo "Found both .aztecrc and .gaztecrc files in $dir. Please only use one of them." >&2
     exit 1
   fi
 
   if [[ -f "$dir/.aztecrc" ]]; then
     AZTEC_VERSION=$(cat $dir/.aztecrc | tr -d '\n')
-    echo "Using aztec version $AZTEC_VERSION from $dir/.aztecrc"
+    echo "Using aztec version $AZTEC_VERSION from $dir/.aztecrc" >&2
     break
   fi
 
   if [[ -f "$dir/.gaztecrc" ]]; then
     AZTEC_VERSION=$(cat $dir/.gaztecrc | tr -d '\n')
-    echo "Using aztec version $AZTEC_VERSION from $dir/.gaztecrc"
+    echo "Using aztec version $AZTEC_VERSION from $dir/.gaztecrc" >&2
     # deprecation warning
-    echo "WARNING: .gaztecrc is deprecated. Please rename to .aztecrc instead."
+    echo "WARNING: .gaztecrc is deprecated. Please rename to .aztecrc instead." >&2
     break
   fi
 
@@ -31,30 +31,30 @@ done
 
 # fallback
 if [[ -z "$AZTEC_VERSION" ]]; then
-  echo "No .aztecrc file found in the current or parent directories starting from $(pwd). Falling back to the latest version."
+  echo "No .aztecrc file found in the current or parent directories starting from $(pwd). Falling back to the latest version." >&2
   # fetch the latest version from github releases, remove the v prefix
   AZTEC_VERSION=$(curl -s https://api.github.com/repos/AztecProtocol/aztec-packages/releases/latest | jq -r '.tag_name' | sed 's/^v//')
-  echo "Latest version is $AZTEC_VERSION"
+  echo "Latest version is $AZTEC_VERSION" >&2
 fi
 
-echo "debug: checking if aztec-up is installed..."
+echo "debug: checking if aztec-up is installed..." >&2
 
 if ! command -v aztec-up &> /dev/null; then
-  echo "aztec-up could not be found. Installing it..."
+  echo "aztec-up could not be found. Installing it..." >&2
   # FOUNDRY_DIR is needed due to a bug in aztec-up
   FOUNDRY_DIR="$HOME/.foundry" VERSION=$AZTEC_VERSION NON_INTERACTIVE=1 bash -i <(curl -sL https://install.aztec.network/$AZTEC_VERSION)
 fi
 
-echo "debug: aztec-up should be installed now"
+echo "debug: aztec-up should be installed now" >&2
 
 AZTEC_PATH="$HOME/.aztec"
 AZTEC_UP="$AZTEC_PATH/bin/aztec-up"
 
 if ! $AZTEC_UP list | grep $AZTEC_VERSION; then
-  echo "Installing aztec version $AZTEC_VERSION..."
+  echo "Installing aztec version $AZTEC_VERSION..." >&2
   $AZTEC_UP install $AZTEC_VERSION
 fi
 
-echo "debug: aztec version $AZTEC_VERSION should be installed now"
+echo "debug: aztec version $AZTEC_VERSION should be installed now" >&2
 
 AZTEC="$AZTEC_PATH/versions/$AZTEC_VERSION/node_modules/.bin/aztec"
