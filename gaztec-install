@@ -42,7 +42,8 @@ AZTEC_UP="$AZTEC_PATH/bin/aztec-up"
 
 if [[ ! -f "$AZTEC_UP" ]]; then
   echo "aztec-up could not be found. Installing it..." >&2
-  VERSION=$AZTEC_VERSION NON_INTERACTIVE=1 bash -i <(curl -sL https://install.aztec.network/$AZTEC_VERSION)
+  # FOUNDRY_DIR is needed due to a bug in aztec-up
+  FOUNDRY_DIR="$HOME/.foundry" VERSION=$AZTEC_VERSION NON_INTERACTIVE=1 bash -i <(curl -sL https://install.aztec.network/$AZTEC_VERSION)
 fi
 
 if ! $AZTEC_UP list | grep $AZTEC_VERSION; then
