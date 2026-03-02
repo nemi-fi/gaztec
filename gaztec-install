@@ -49,6 +49,10 @@ echo "debug: aztec-up should be installed now"
 
 # handle github CI
 if [[ -n "${GITHUB_PATH-}" ]]; then
+  echo "debug: adding $HOME/.aztec/bin to github path"
+  echo "debug: contents of $HOME/.aztec/bin:"
+  ls -la $HOME/.aztec/bin
+
   echo "$HOME/.aztec/bin" >> $GITHUB_PATH
 fi
 
