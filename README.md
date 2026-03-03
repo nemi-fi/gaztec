@@ -1,6 +1,6 @@
 # Aztec version manager
 
-Manage your `aztec` versions without hussle. Automatically switch between versions in projects by creating a `.gaztecrc` file.
+Manage your `aztec` versions without hussle. Automatically switch between versions in projects by creating a `.aztecrc` file.
 
 ## Installation
 
@@ -20,7 +20,7 @@ npm i gaztec -D
 
 ```sh
 # create a file that defines the version of Aztec for your project
-echo "4.0.0-devnet.2-patch.2" > .gaztecrc
+echo "4.0.0-devnet.2-patch.2" > .aztecrc
 
 # use `gaztec` where you would use `aztec`
 gaztec --version
