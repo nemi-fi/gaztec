@@ -53,6 +53,8 @@ fi
 
 # needed due to a bug. Without this line, it tries to use bb from ~/.bb
 export BB="$AZTEC_PATH/versions/$AZTEC_VERSION/node_modules/.bin/bb"
+# needed due to a bug. Without this line, it tries to use nargo from ~/.nargo
+export NARGO="$AZTEC_PATH/versions/$AZTEC_VERSION/bin/nargo"
 
 # bug on CI with nvm
 if [[ -n "${CI:-}" ]] && command -v npm >/dev/null 2>&1; then
