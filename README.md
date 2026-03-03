@@ -32,6 +32,32 @@ npm i gaztec -D
 
 **Note**: with `pnpm` or `yarn`, use `npx gaztec` instead of `pnpm gaztec` or `yarn gaztec`.
 
+## CI
+
+Commit a `.aztecrc` file to your repo and use `npx gaztec` in your workflow. No setup step needed:
+
+```yaml
+name: Test
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Compile Aztec contracts
+        run: npx gaztec compile
+
+      - name: Start Aztec Local Network
+        run: npx gaztec start --local-network
+```
+
 ## Compatibility with `aztec`
 
 | gaztec version | aztec version |
