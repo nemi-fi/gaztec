@@ -3,4 +3,10 @@ set -euo pipefail
 
 source "$(dirname -- "${BASH_SOURCE[0]}")/gaztec-install"
 
-$AZTEC $@
+# if the subcommand is "nargo", run nargo instead
+if [[ "$1" == "nargo" ]]; then
+  shift
+  $NARGO $@
+else
+  $AZTEC $@
+fi

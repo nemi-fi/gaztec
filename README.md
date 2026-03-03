@@ -20,6 +20,15 @@ npx gaztec --version
 #> 4.0.0-devnet.2-patch.2
 ```
 
+## `gaztec nargo`
+
+`gaztec nargo` exposes the pinned version of `nargo` that is compatible with the installed version of Aztec. Useful if you don't want to manage the version of `nargo` yourself.
+
+```sh
+# runs `nargo check` with the pinned version of `nargo`
+npx gaztec nargo check
+```
+
 ## Installation (optional)
 
 You can install gaztec globally or as a dev dependency (to pin the version) if you prefer:
