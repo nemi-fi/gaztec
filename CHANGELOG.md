@@ -4,4 +4,4 @@
 
 ### Added
 
-- Initial release of gaztec - Aztec version manager
+- Support dockerless `aztec` installation
