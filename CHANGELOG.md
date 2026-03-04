@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/nemi-fi/gaztec/compare/v1.1.0...v1.2.0) (2026-03-04)
+
+
+### Features
+
+* Add action.yml ([#3](https://github.com/nemi-fi/gaztec/issues/3)) ([8abfd07](https://github.com/nemi-fi/gaztec/commit/8abfd07225162f93068ad668bde727e35aa9f0b4))
+
 ## [1.1.0](https://github.com/nemi-fi/gaztec/compare/v1.0.3...v1.1.0) (2026-03-04)
 
 

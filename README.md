@@ -69,7 +69,7 @@ jobs:
 
       # gaztec action requires node.js and installed dependencies to run
       - name: Setup gaztec
-        uses: nemi-fi/gaztec@v1.1.0
+        uses: nemi-fi/gaztec@v1.2.0
 
       - name: Compile Aztec contracts
         run: npx gaztec compile
