@@ -9,6 +9,7 @@
     "url": "https://github.com/nemi-fi/gaztec.git"
   },
   "bin": {
+    "gaztec-install": "./gaztec-install",
     "gaztec": "./gaztec"
   },
   "scripts": {
