@@ -1,0 +1,19 @@
+name: "Setup gaztec"
+description: "Restore cache for Aztec and run gaztec installer."
+
+runs:
+  using: "composite"
+  steps:
+    - name: Cache Aztec
+      uses: actions/cache@v5
+      with:
+        path: |
+          ~/.aztec
+          ~/.foundry
+        key: gaztec-${{ runner.os }}
+        restore-keys: |
+          gaztec-${{ runner.os }}-
+
+    - name: Install gaztec
+      shell: bash
+      run: npx gaztec --version
