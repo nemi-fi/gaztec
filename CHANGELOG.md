@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.0](https://github.com/nemi-fi/gaztec/compare/v1.2.0...v1.3.0) (2026-03-04)
+
+
+### Features
+
+* Remove gaztec-install from package.json bin section ([95e1127](https://github.com/nemi-fi/gaztec/commit/95e112732c68b88f2f9d40bd49b2c0ce2907451c))
+* Self-test github action ([32161e3](https://github.com/nemi-fi/gaztec/commit/32161e352296017c0892ba8649361d4f9b806911))
+
+
+### Bug Fixes
+
+* Properly reference action.yml ([8e177a2](https://github.com/nemi-fi/gaztec/commit/8e177a2e9d5c6b4948c61e6afcaee0538666db5e))
+
 ## [1.2.0](https://github.com/nemi-fi/gaztec/compare/v1.1.0...v1.2.0) (2026-03-04)
 
 
