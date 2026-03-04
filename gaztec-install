@@ -51,6 +51,8 @@ if ! $AZTEC_UP list | grep $AZTEC_VERSION; then
   $AZTEC_UP install $AZTEC_VERSION
 fi
 
+$AZTEC_UP use $AZTEC_VERSION
+
 # needed due to a bug. Without this line, it tries to use bb from ~/.bb
 export BB="$AZTEC_PATH/versions/$AZTEC_VERSION/node_modules/.bin/bb"
 # needed due to a bug. Without this line, it tries to use nargo from ~/.nargo
@@ -59,6 +61,12 @@ export NARGO="$AZTEC_PATH/versions/$AZTEC_VERSION/bin/nargo"
 # bug on CI with nvm
 if [[ -n "${CI:-}" ]] && command -v npm >/dev/null 2>&1; then
   npm config delete prefix
+fi
+
+# on github CI (GITHUB_PATH exists), add the aztec path to the path
+if [[ -n "${GITHUB_PATH:-}" ]]; then
+  echo "$AZTEC_PATH/versions/$AZTEC_VERSION/bin" >> $GITHUB_PATH
+  echo "$AZTEC_PATH/versions/$AZTEC_VERSION/node_modules/.bin" >> $GITHUB_PATH
 fi
 
 AZTEC="$AZTEC_PATH/versions/$AZTEC_VERSION/node_modules/.bin/aztec"
