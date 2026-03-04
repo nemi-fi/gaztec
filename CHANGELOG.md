@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/nemi-fi/gaztec/compare/v1.3.0...v1.3.1) (2026-03-04)
+
+
+### Bug Fixes
+
+* Revert "feat: remove gaztec-install from package.json bin section" ([f34ce4c](https://github.com/nemi-fi/gaztec/commit/f34ce4c6069451b42b883c4d64662e715216e125))
+
 ## [1.3.0](https://github.com/nemi-fi/gaztec/compare/v1.2.0...v1.3.0) (2026-03-04)
 
 
