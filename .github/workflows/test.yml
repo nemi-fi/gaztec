@@ -16,9 +16,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # x-release-please-start-version
-      - uses: nemi-fi/gaztec@v1.2.0
-      # x-release-please-end
+      - uses: ./action.yml
 
       - name: Run tests
         run: pnpm test

@@ -8,10 +8,7 @@
     ".": {
       "release-type": "node",
       "include-component-in-tag": false,
-      "extra-files": [
-        { "type": "generic", "path": "README.md" },
-        { "type": "generic", "path": ".github/workflows/test.yml" }
-      ]
+      "extra-files": [{ "type": "generic", "path": "README.md" }]
     }
   },
   "plugins": ["sentence-case"]
