@@ -16,7 +16,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - uses: ./action.yml
+      - uses: ./
 
       - name: Run tests
         run: pnpm test
