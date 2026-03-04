@@ -43,7 +43,11 @@ npm i gaztec -D
 
 ## CI
 
-Commit a `.aztecrc` file to your repo and use `npx gaztec` in your workflow. No setup step needed:
+Commit a `.aztecrc` file to your repo. Use the **gaztec GitHub Action** for cached installs in your CI(saves 1-2 minutes per run).
+
+The action caches Aztec between runs to speed up workflows:
+
+<!-- x-release-please-start-version -->
 
 ```yaml
 name: Test
@@ -55,10 +59,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 24
+
+      - name: Install dependencies
+        run: npm ci
+
+      # gaztec action requires node.js and installed dependencies to run
+      - name: Setup gaztec
+        uses: nemi-fi/gaztec@v1.1.0
 
       - name: Compile Aztec contracts
         run: npx gaztec compile
@@ -66,6 +77,8 @@ jobs:
       - name: Start Aztec Local Network
         run: npx gaztec start --local-network
 ```
+
+<!-- x-release-please-end -->
 
 ## Compatibility with `aztec`
 
