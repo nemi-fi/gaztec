@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/nemi-fi/gaztec/compare/v1.3.1...v1.4.0) (2026-03-05)
+
+
+### Features
+
+* Update cache key in action.yml to include aztecrc hash for better cache management ([f707fde](https://github.com/nemi-fi/gaztec/commit/f707fdebd40026d9a2cf525697845edf2063d864))
+
 ## [1.3.1](https://github.com/nemi-fi/gaztec/compare/v1.3.0...v1.3.1) (2026-03-04)
 
 
