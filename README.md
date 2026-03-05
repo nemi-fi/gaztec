@@ -18,6 +18,15 @@ echo "4.0.0-devnet.2-patch.2" > .aztecrc
 # use gaztec where you would use aztec (no install needed)
 npx gaztec --version
 #> 4.0.0-devnet.2-patch.2
+
+# compile your contracts
+npx gaztec compile
+
+# codegen
+npx gaztec codegen
+
+# start the local network
+npx gaztec start --local-network
 ```
 
 ## `gaztec nargo`
