@@ -10,7 +10,7 @@ runs:
         path: |
           ~/.aztec
           ~/.foundry
-        key: gaztec-${{ runner.os }}
+        key: gaztec-${{ runner.os }}-${{ hashFiles('**/.aztecrc') }}
         restore-keys: |
           gaztec-${{ runner.os }}-
 
