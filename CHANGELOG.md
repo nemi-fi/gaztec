@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/nemi-fi/gaztec/compare/v1.4.0...v1.4.1) (2026-07-27)
+
+
+### Bug Fixes
+
+* Support the Aztec &gt;=5.1.0 install layout ([#10](https://github.com/nemi-fi/gaztec/issues/10)) ([3df8463](https://github.com/nemi-fi/gaztec/commit/3df846301bc0485ae354ee077944c0d2432ffb4f))
+
 ## [1.4.0](https://github.com/nemi-fi/gaztec/compare/v1.3.1...v1.4.0) (2026-03-05)
 
 
