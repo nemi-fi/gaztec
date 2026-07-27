@@ -39,6 +39,43 @@ fi
 
 AZTEC_PATH="$HOME/.aztec"
 AZTEC_UP="$AZTEC_PATH/bin/aztec-up"
+AZTEC_VERSION_PATH="$AZTEC_PATH/versions/$AZTEC_VERSION"
+
+# Echoes the first argument that is an executable file, or returns 1 if there is none.
+# Used to support both Aztec install layouts, see `resolve_tools` below.
+function gaztec_first_executable {
+  local candidate
+  for candidate in "$@"; do
+    if [[ -x "$candidate" ]]; then
+      echo "$candidate"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Aztec >=5.1.0 and older versions lay out their binaries differently, so every tool is
+# looked up by trying the known locations newest-first:
+#
+#   >=5.1.0  native tools (nargo, forge, ...) live in `internal-bin/` which is deliberately
+#            kept off PATH so they cannot shadow user-installed tools, and are exposed as
+#            `bin/aztec-<tool>`. npm bins are exposed as `bin/aztec-<bin>`. `bin/aztec` is a
+#            wrapper that prepends `internal-bin/` to PATH before exec'ing the real CLI,
+#            which is what lets `aztec compile`/`aztec test` spawn bare `nargo`. Running
+#            `node_modules/.bin/aztec` directly bypasses the wrapper and breaks those.
+#   <5.1.0   bare binaries in `bin/`, npm bins in `node_modules/.bin/`.
+function gaztec_resolve_tools {
+  AZTEC=$(gaztec_first_executable \
+    "$AZTEC_VERSION_PATH/bin/aztec" \
+    "$AZTEC_VERSION_PATH/node_modules/.bin/aztec") || return 1
+  NARGO=$(gaztec_first_executable \
+    "$AZTEC_VERSION_PATH/bin/aztec-nargo" \
+    "$AZTEC_VERSION_PATH/internal-bin/nargo" \
+    "$AZTEC_VERSION_PATH/bin/nargo") || return 1
+  BB=$(gaztec_first_executable \
+    "$AZTEC_VERSION_PATH/bin/aztec-bb" \
+    "$AZTEC_VERSION_PATH/node_modules/.bin/bb") || return 1
+}
 
 if [[ ! -f "$AZTEC_UP" ]]; then
   echo "aztec-up could not be found. Installing it..." >&2
@@ -46,17 +83,26 @@ if [[ ! -f "$AZTEC_UP" ]]; then
   FOUNDRY_DIR="$HOME/.foundry" VERSION=$AZTEC_VERSION NON_INTERACTIVE=1 bash -i <(curl -sL https://install.aztec.network/$AZTEC_VERSION)
 fi
 
-if ! $AZTEC_UP list | grep $AZTEC_VERSION; then
+# Probe for the binaries themselves rather than parsing `aztec-up list`: its output also
+# contains an alias section (`latest -> 5.1.0`), so grepping it for a version reports a
+# version as installed when only an alias points at it. Probing also self-heals a version
+# whose install was interrupted, which `aztec-up list` still reports as installed.
+if ! gaztec_resolve_tools; then
   echo "Installing aztec version $AZTEC_VERSION..." >&2
   $AZTEC_UP install $AZTEC_VERSION
+  if ! gaztec_resolve_tools; then
+    echo "Error: aztec version $AZTEC_VERSION is still incomplete after installing it." >&2
+    echo "Remove $AZTEC_VERSION_PATH and try again." >&2
+    exit 1
+  fi
 fi
 
 $AZTEC_UP use $AZTEC_VERSION
 
-# needed due to a bug. Without this line, it tries to use bb from ~/.bb
-export BB="$AZTEC_PATH/versions/$AZTEC_VERSION/node_modules/.bin/bb"
-# needed due to a bug. Without this line, it tries to use nargo from ~/.nargo
-export NARGO="$AZTEC_PATH/versions/$AZTEC_VERSION/bin/nargo"
+# needed due to a bug. Without these lines, it tries to use bb from ~/.bb and nargo from
+# ~/.nargo
+export BB
+export NARGO
 
 # bug on CI with nvm
 if [[ -n "${CI:-}" ]] && command -v npm >/dev/null 2>&1; then
@@ -65,8 +111,9 @@ fi
 
 # on github CI (GITHUB_PATH exists), add the aztec path to the path
 if [[ -n "${GITHUB_PATH:-}" ]]; then
-  echo "$AZTEC_PATH/versions/$AZTEC_VERSION/bin" >> $GITHUB_PATH
-  echo "$AZTEC_PATH/versions/$AZTEC_VERSION/node_modules/.bin" >> $GITHUB_PATH
+  for dir in "$AZTEC_VERSION_PATH/bin" "$AZTEC_VERSION_PATH/node_modules/.bin"; do
+    if [[ -d "$dir" ]]; then
+      echo "$dir" >>$GITHUB_PATH
+    fi
+  done
 fi
-
-AZTEC="$AZTEC_PATH/versions/$AZTEC_VERSION/node_modules/.bin/aztec"
