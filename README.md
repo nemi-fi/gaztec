@@ -48,7 +48,7 @@ npm i -g gaztec
 npm i gaztec -D
 ```
 
-**Note**: with `pnpm` or `yarn`, use `npx gaztec` instead of `pnpm gaztec` or `yarn gaztec`.
+Works with any package manager: `npx gaztec`, `pnpm gaztec`, `pnpm dlx gaztec`, `yarn gaztec` (including Yarn Berry/PnP) and `yarn dlx gaztec`.
 
 ## CI
 

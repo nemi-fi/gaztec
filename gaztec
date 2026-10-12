@@ -3,10 +3,12 @@ set -euo pipefail
 
 source "$(dirname -- "${BASH_SOURCE[0]}")/gaztec-install"
 
+# exec so that signals (Ctrl-C, SIGTERM) reach aztec/nargo directly instead of killing this
+# shell and orphaning them
 # if the subcommand is "nargo", run nargo instead
-if [[ "$1" == "nargo" ]]; then
+if [[ "${1:-}" == "nargo" ]]; then
   shift
-  $NARGO $@
+  exec $NARGO "$@"
 else
-  $AZTEC $@
+  exec $AZTEC "$@"
 fi
