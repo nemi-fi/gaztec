@@ -12,7 +12,6 @@ trap 'rm -rf "$WORK"' EXIT
 
 VERSION=0.0.0-gaztec-test
 export HOME="$WORK/home"
-export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 # keep the real user's npm config (registry, auth, proxy) despite the fake HOME
 export NPM_CONFIG_USERCONFIG="${NPM_CONFIG_USERCONFIG:-$(npm config get userconfig)}"
 
@@ -70,8 +69,13 @@ pnpm add -D "$TARBALL" >/dev/null 2>&1
 check "pnpm" pnpm gaztec
 check "pnpm dlx" pnpm dlx "$TARBALL"
 
-cd "$(new_project yarn-berry ',"packageManager":"yarn@4.9.2"')"
-corepack yarn add -D "gaztec@file:$TARBALL" >/dev/null 2>&1
-check "yarn berry" corepack yarn gaztec
+# Yarn Berry straight from npm, so neither a global yarn nor corepack is needed
+function yarn_berry {
+  npx --yes @yarnpkg/cli-dist@4.9.2 "$@"
+}
+cd "$(new_project yarn-berry)"
+yarn_berry add -D "gaztec@file:$TARBALL" >/dev/null 2>&1
+check "yarn berry" yarn_berry gaztec
+check "yarn berry dlx" yarn_berry dlx -p "gaztec@file:$TARBALL" gaztec
 
 echo "Package manager tests passed"
