@@ -48,8 +48,6 @@ npm i -g gaztec
 npm i gaztec -D
 ```
 
-Works with any package manager: `npx gaztec`, `pnpm gaztec`, `pnpm dlx gaztec`, `yarn gaztec` (including Yarn Berry/PnP) and `yarn dlx gaztec`.
-
 ## CI
 
 Commit a `.aztecrc` file to your repo. Use the **gaztec GitHub Action** for cached installs in your CI(saves 1-2 minutes per run).
