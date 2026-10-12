@@ -32,6 +32,8 @@ function test_version {
   rm -rf "$dir"
 }
 
+"$TEST_DIR/package-managers.sh"
+
 test_version "$(tr -d '\n' <"$TEST_DIR/../.aztecrc")"
 test_version "5.1.0"
 

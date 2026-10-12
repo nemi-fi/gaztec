@@ -48,8 +48,6 @@ npm i -g gaztec
 npm i gaztec -D
 ```
 
-**Note**: with `pnpm` or `yarn`, use `npx gaztec` instead of `pnpm gaztec` or `yarn gaztec`.
-
 ## CI
 
 Commit a `.aztecrc` file to your repo. Use the **gaztec GitHub Action** for cached installs in your CI(saves 1-2 minutes per run).
