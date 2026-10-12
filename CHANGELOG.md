@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/nemi-fi/gaztec/compare/v1.4.1...v1.4.2) (2026-10-12)
+
+
+### Bug Fixes
+
+* Run gaztec through yarn (incl. Berry/PnP) and pnpm, not just npx ([#12](https://github.com/nemi-fi/gaztec/issues/12)) ([bdb2096](https://github.com/nemi-fi/gaztec/commit/bdb2096890ab98320c6380d2996a359207be810f))
+
 ## [1.4.1](https://github.com/nemi-fi/gaztec/compare/v1.4.0...v1.4.1) (2026-07-27)
 
 
