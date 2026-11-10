@@ -7,8 +7,8 @@ GAZTEC="$TEST_DIR/../gaztec"
 # Aztec changed its install layout in 5.1.0: native tools moved into an internal-bin/ that
 # is deliberately kept off PATH, the binaries exposed in bin/ gained an `aztec-` prefix, and
 # `bin/aztec` became a wrapper around the npm bin. Both layouts have to keep working, so
-# exercise a version on either side of that change. The repo's own .aztecrc pins the older
-# one.
+# exercise a version on either side of that change, plus the version the repo's own .aztecrc
+# pins.
 function test_version {
   local version="$1"
   local dir
@@ -34,7 +34,8 @@ function test_version {
 
 "$TEST_DIR/package-managers.sh"
 
-test_version "$(tr -d '\n' <"$TEST_DIR/../.aztecrc")"
+test_version "4.0.0-devnet.2-patch.2"
 test_version "5.1.0"
+test_version "$(tr -d '\n' <"$TEST_DIR/../.aztecrc")"
 
 echo "Test passed"
