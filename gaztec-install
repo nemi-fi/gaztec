@@ -38,6 +38,7 @@ if [[ -z "$AZTEC_VERSION" ]]; then
 fi
 
 AZTEC_PATH="$HOME/.aztec"
+AZTEC_INSTALL_URI="${INSTALL_URI:-https://install.aztec-labs.com}"
 AZTEC_UP="$AZTEC_PATH/bin/aztec-up"
 AZTEC_VERSION_PATH="$AZTEC_PATH/versions/$AZTEC_VERSION"
 
@@ -77,10 +78,114 @@ function gaztec_resolve_tools {
     "$AZTEC_VERSION_PATH/node_modules/.bin/bb") || return 1
 }
 
+# Echoes the Node.js version Aztec $AZTEC_VERSION requires, read from its `versions` file
+# (fetched if the version is not installed yet). Echoes nothing if it cannot be determined.
+function gaztec_required_node_version {
+  local versions_file="$AZTEC_VERSION_PATH/versions"
+  local versions
+  if [[ -f "$versions_file" ]]; then
+    versions=$(cat "$versions_file")
+  else
+    versions=$(curl -fsSL "$AZTEC_INSTALL_URI/$AZTEC_VERSION/versions" 2>/dev/null) || return 0
+  fi
+  echo "$versions" | grep '^node:' | awk '{print $2}' | sed 's/^v//' || true
+}
+
+# Aztec requires a minimum Node.js version, but `aztec-up` can only upgrade Node.js through
+# nvm and fails outright without it (e.g. in containers and cloud sandboxes that ship an older
+# Node.js and no nvm). If the Node.js on PATH is too old, download the required version into
+# $AZTEC_PATH/gaztec/ and put it first on PATH for both the install and the aztec command.
+function gaztec_ensure_node {
+  local required
+  required=$(gaztec_required_node_version)
+  [[ -n "$required" ]] || return 0
+
+  local installed
+  installed=$(node --version 2>/dev/null | sed 's/^v//' || true)
+  if [[ -n "$installed" && "$(printf '%s\n' "$required" "$installed" | sort -V | head -n1)" == "$required" ]]; then
+    return 0
+  fi
+
+  local os arch
+  case "$(uname -s)" in
+  Linux) os=linux ;;
+  Darwin) os=darwin ;;
+  *) return 0 ;;
+  esac
+  case "$(uname -m)" in
+  x86_64 | amd64) arch=x64 ;;
+  arm64 | aarch64) arch=arm64 ;;
+  *) return 0 ;;
+  esac
+
+  local node_dir="$AZTEC_PATH/gaztec/node-v$required-$os-$arch"
+  if [[ ! -x "$node_dir/bin/node" ]]; then
+    echo "Aztec $AZTEC_VERSION requires Node.js >= $required (found ${installed:-none}). Downloading Node.js $required to $node_dir..." >&2
+    local tmp
+    tmp=$(mktemp -d)
+    curl -fsSL "https://nodejs.org/dist/v$required/node-v$required-$os-$arch.tar.gz" | tar -xz -C "$tmp"
+    mkdir -p "$(dirname "$node_dir")"
+    rm -rf "$node_dir"
+    mv "$tmp/node-v$required-$os-$arch" "$node_dir"
+    rm -rf "$tmp"
+  fi
+  export PATH="$node_dir/bin:$PATH"
+  GAZTEC_NODE_BIN="$node_dir/bin"
+}
+
+GAZTEC_NODE_BIN=""
+gaztec_ensure_node
+
+# Claude Code cloud sessions (CLAUDE_CODE_REMOTE=true) route traffic through a proxy that
+# allows GitHub release downloads but blocks the github.com attestation endpoint foundryup
+# verifies binaries against, so the foundry step of the Aztec install fails. There, gaztec
+# skips that verification: FOUNDRYUP_IGNORE_VERIFICATION covers the foundryup init script,
+# and since the foundryup binary only skips it with `--force`, gaztec runs the Aztec
+# per-version installer itself (as `aztec-up install` does) with `--force` added to its
+# foundryup call. The binaries are still downloaded over HTTPS from GitHub releases.
+GAZTEC_SKIP_FOUNDRY_VERIFICATION=""
+if [[ "${CLAUDE_CODE_REMOTE:-}" == "true" ]]; then
+  GAZTEC_SKIP_FOUNDRY_VERIFICATION=1
+fi
+
+# Installs aztec-up (and, unless skipped below, the Aztec version) with the official installer.
+function gaztec_install_aztec_up {
+  local script
+  script=$(curl -fsSL "https://install.aztec.network/$AZTEC_VERSION")
+  if [[ -n "$GAZTEC_SKIP_FOUNDRY_VERIFICATION" ]]; then
+    # only install aztec-up here, `gaztec_install_version` installs the version
+    local patched="${script//aztec-up install \$VERSION/true}"
+    if [[ "$patched" == "$script" ]]; then
+      echo "Warning: could not patch the aztec-up installer to skip foundry verification." >&2
+    fi
+    script="$patched"
+  fi
+  # FOUNDRY_DIR is needed due to a bug in aztec-up
+  FOUNDRY_DIR="$HOME/.foundry" VERSION=$AZTEC_VERSION NON_INTERACTIVE=1 bash -i <(printf '%s\n' "$script")
+}
+
+function gaztec_install_version {
+  if [[ -z "$GAZTEC_SKIP_FOUNDRY_VERIFICATION" ]]; then
+    $AZTEC_UP install $AZTEC_VERSION
+    return
+  fi
+
+  echo "Claude Code cloud session detected: skipping foundry attestation verification, which its network proxy blocks." >&2
+  local installer patched
+  installer=$(curl -fsSL "$AZTEC_INSTALL_URI/$AZTEC_VERSION/install")
+  patched="${installer//\/bin\/foundryup\" -i/\/bin\/foundryup\" --force -i}"
+  if [[ "$patched" == "$installer" ]]; then
+    echo "Warning: could not patch the Aztec installer to skip foundry verification. Installing as usual." >&2
+    $AZTEC_UP install $AZTEC_VERSION
+    return
+  fi
+  printf '%s\n' "$patched" | FOUNDRYUP_IGNORE_VERIFICATION=true VERSION="$AZTEC_VERSION" bash
+  ln -sfn "$AZTEC_VERSION_PATH" "$AZTEC_PATH/current"
+}
+
 if [[ ! -f "$AZTEC_UP" ]]; then
   echo "aztec-up could not be found. Installing it..." >&2
-  # FOUNDRY_DIR is needed due to a bug in aztec-up
-  FOUNDRY_DIR="$HOME/.foundry" VERSION=$AZTEC_VERSION NON_INTERACTIVE=1 bash -i <(curl -sL https://install.aztec.network/$AZTEC_VERSION)
+  gaztec_install_aztec_up
 fi
 
 # Probe for the binaries themselves rather than parsing `aztec-up list`: its output also
@@ -89,7 +194,7 @@ fi
 # whose install was interrupted, which `aztec-up list` still reports as installed.
 if ! gaztec_resolve_tools; then
   echo "Installing aztec version $AZTEC_VERSION..." >&2
-  $AZTEC_UP install $AZTEC_VERSION
+  gaztec_install_version
   if ! gaztec_resolve_tools; then
     echo "Error: aztec version $AZTEC_VERSION is still incomplete after installing it." >&2
     echo "Remove $AZTEC_VERSION_PATH and try again." >&2
@@ -111,7 +216,7 @@ fi
 
 # on github CI (GITHUB_PATH exists), add the aztec path to the path
 if [[ -n "${GITHUB_PATH:-}" ]]; then
-  for dir in "$AZTEC_VERSION_PATH/bin" "$AZTEC_VERSION_PATH/node_modules/.bin"; do
+  for dir in "$AZTEC_VERSION_PATH/bin" "$AZTEC_VERSION_PATH/node_modules/.bin" "$GAZTEC_NODE_BIN"; do
     if [[ -d "$dir" ]]; then
       echo "$dir" >>$GITHUB_PATH
     fi
