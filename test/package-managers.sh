@@ -17,6 +17,8 @@ export NPM_CONFIG_USERCONFIG="${NPM_CONFIG_USERCONFIG:-$(npm config get userconf
 
 mkdir -p "$HOME/.aztec/bin" "$HOME/.aztec/versions/$VERSION/bin"
 printf '#!/bin/sh\n' >"$HOME/.aztec/bin/aztec-up"
+# keep gaztec from fetching the versions manifest of the fake version
+printf 'node: 0.0.0\n' >"$HOME/.aztec/versions/$VERSION/versions"
 printf '#!/bin/sh\necho "aztec($#) $*"\n[ "$1" = fail ] && exit "$2"\nexit 0\n' >"$HOME/.aztec/versions/$VERSION/bin/aztec"
 printf '#!/bin/sh\necho "nargo $*"\n' >"$HOME/.aztec/versions/$VERSION/bin/aztec-nargo"
 printf '#!/bin/sh\n' >"$HOME/.aztec/versions/$VERSION/bin/aztec-bb"

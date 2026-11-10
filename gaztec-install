@@ -77,6 +77,64 @@ function gaztec_resolve_tools {
     "$AZTEC_VERSION_PATH/node_modules/.bin/bb") || return 1
 }
 
+# Echoes the Node.js version Aztec $AZTEC_VERSION requires, read from its `versions` file
+# (fetched if the version is not installed yet). Echoes nothing if it cannot be determined.
+function gaztec_required_node_version {
+  local versions_file="$AZTEC_VERSION_PATH/versions"
+  local versions
+  if [[ -f "$versions_file" ]]; then
+    versions=$(cat "$versions_file")
+  else
+    versions=$(curl -fsSL "https://install.aztec-labs.com/$AZTEC_VERSION/versions" 2>/dev/null) || return 0
+  fi
+  echo "$versions" | grep '^node:' | awk '{print $2}' | sed 's/^v//' || true
+}
+
+# Aztec requires a minimum Node.js version, but `aztec-up` can only upgrade Node.js through
+# nvm and fails outright without it (e.g. in containers and cloud sandboxes that ship an older
+# Node.js and no nvm). If the Node.js on PATH is too old, download the required version into
+# $AZTEC_PATH/gaztec/ and put it first on PATH for both the install and the aztec command.
+function gaztec_ensure_node {
+  local required
+  required=$(gaztec_required_node_version)
+  [[ -n "$required" ]] || return 0
+
+  local installed
+  installed=$(node --version 2>/dev/null | sed 's/^v//' || true)
+  if [[ -n "$installed" && "$(printf '%s\n' "$required" "$installed" | sort -V | head -n1)" == "$required" ]]; then
+    return 0
+  fi
+
+  local os arch
+  case "$(uname -s)" in
+  Linux) os=linux ;;
+  Darwin) os=darwin ;;
+  *) return 0 ;;
+  esac
+  case "$(uname -m)" in
+  x86_64 | amd64) arch=x64 ;;
+  arm64 | aarch64) arch=arm64 ;;
+  *) return 0 ;;
+  esac
+
+  local node_dir="$AZTEC_PATH/gaztec/node-v$required-$os-$arch"
+  if [[ ! -x "$node_dir/bin/node" ]]; then
+    echo "Aztec $AZTEC_VERSION requires Node.js >= $required (found ${installed:-none}). Downloading Node.js $required to $node_dir..." >&2
+    local tmp
+    tmp=$(mktemp -d)
+    curl -fsSL "https://nodejs.org/dist/v$required/node-v$required-$os-$arch.tar.gz" | tar -xz -C "$tmp"
+    mkdir -p "$(dirname "$node_dir")"
+    rm -rf "$node_dir"
+    mv "$tmp/node-v$required-$os-$arch" "$node_dir"
+    rm -rf "$tmp"
+  fi
+  export PATH="$node_dir/bin:$PATH"
+  GAZTEC_NODE_BIN="$node_dir/bin"
+}
+
+GAZTEC_NODE_BIN=""
+gaztec_ensure_node
+
 if [[ ! -f "$AZTEC_UP" ]]; then
   echo "aztec-up could not be found. Installing it..." >&2
   # FOUNDRY_DIR is needed due to a bug in aztec-up
@@ -111,7 +169,7 @@ fi
 
 # on github CI (GITHUB_PATH exists), add the aztec path to the path
 if [[ -n "${GITHUB_PATH:-}" ]]; then
-  for dir in "$AZTEC_VERSION_PATH/bin" "$AZTEC_VERSION_PATH/node_modules/.bin"; do
+  for dir in "$AZTEC_VERSION_PATH/bin" "$AZTEC_VERSION_PATH/node_modules/.bin" "$GAZTEC_NODE_BIN"; do
     if [[ -d "$dir" ]]; then
       echo "$dir" >>$GITHUB_PATH
     fi
