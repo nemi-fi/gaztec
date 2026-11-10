@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.3](https://github.com/nemi-fi/gaztec/compare/v1.4.2...v1.4.3) (2026-11-10)
+
+
+### Bug Fixes
+
+* Make gaztec work in Claude Code cloud sessions ([#14](https://github.com/nemi-fi/gaztec/issues/14)) ([becddf7](https://github.com/nemi-fi/gaztec/commit/becddf75b6b2368caea0895bb0c307e38ab828b6))
+
 ## [1.4.2](https://github.com/nemi-fi/gaztec/compare/v1.4.1...v1.4.2) (2026-10-12)
 
 
